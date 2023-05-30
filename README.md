@@ -150,4 +150,3 @@ There are cases where fine-tuning is necessary, such as when the examples contai
 This error happens if your embedding model *text-embedding-ada-002* has a limit of 2047 max tokens. Older versions of this model in Azure OpenAI has this reduced limit. However the newer versions have the 8192 limit. Make sure you request the newer version, or if not possible, reduce the size of the TextSplit in Azure Search indexing from 5000 (default) to 3500.
 
 
-
