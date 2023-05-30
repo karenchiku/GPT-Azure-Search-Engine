@@ -23,6 +23,12 @@ export AZURE_SEARCH_KEY=<Enter your value>
 export AZURE_OPENAI_ENDPOINT=<Enter your value>
 export AZURE_OPENAI_API_KEY=<Enter your value>
 export DATASOURCE_SAS_TOKEN=<Enter your value>
+export BING_SUBSCRIPTION_KEY=<Enter your value>
+export SQL_SERVER_ENDPOINT=<Enter your value>
+export SQL_SERVER_DATABASE=<Enter your value>
+export SQL_SERVER_USERNAME=<Enter your value>
+export SQL_SERVER_PASSWORD=<Enter your value>
+export BING_SUBSCRIPTION_KEY=<Enter your value>
 ```
 3. Run the Streamlit server🚀
 ```bash
@@ -47,7 +53,6 @@ Example: https://myComputeInstance-8501.southcentralus.instances.azureml.ms/
 
 3. Your App should be working now.
 
-4. Everytime you commit changes to your branch it will kick in CI/CD and deploy your changes to the web app
 
 ### [Local Git deployment to Azure App Service](https://learn.microsoft.com/en-us/azure/app-service/deploy-local-git?tabs=cli)
 
@@ -88,7 +93,21 @@ For example, if you are running the app on an Azure ML compute instance:
     conda activate azureml_py310_sdkv2
     ```
 
-3. If deployment fails with error "Cannot find SourceControlToken with name Github" you can try the following
+3. If running locally and in Tabular Demo (preview) page you get this error: `AxiosError: Request failed with status code 403` when trying to upload the documment, do this in the shell
+    
+    ```bash
+    mkdir -p ~/.streamlit/
+    echo "\
+    [server]\n\
+    headless = true\n\
+    port = 8501\n\
+    enableXsrfProtection=false\n\
+    enableCORS = false\n\
+    \n\
+    " > ~/.streamlit/config.toml
+    ```
+    
+4. If deployment fails with error "Cannot find SourceControlToken with name Github" you can try the following
     1. Wait 20 mins and Retry
     2. Delete the browser cache and retry
     3. Go to the deployed WebApp and Authorize azure to deploy and build code directly from Github 

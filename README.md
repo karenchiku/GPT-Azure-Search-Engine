@@ -1,15 +1,20 @@
 ![image](https://user-images.githubusercontent.com/113465005/226238596-cc76039e-67c2-46b6-b0bb-35d037ae66e1.png)
 
-# Accelerator powered by Azure Cognitive Search + Azure OpenAI 
-Your organization needs a search engine that can make sense of all kinds of types of data, stored in different locations, and that can return the links of similar documents, but more importantly, provide the answer to the question! In other words, you want private and secured ChatGPT for your organization that can interpret, comprehend, and answer questions about your business data.
+# 3-day Workshop VBD powered by Azure Cognitive Search + Azure OpenAI + Langchain
+Your organization requires a chatbot and a search engine capable of comprehending diverse types of data scattered across various locations. Additionally, the conversational chatbot should be able to provide answers to inquiries, along with the source and an explanation of how and where the answer was obtained. In other words, you want **private and secured ChatGPT for your organization that can interpret, comprehend, and answer questions about your business data**.
 
-The goal of the MVP workshop is to show/prove the value of a GPT Smart Search Engine built with the Azure Services, with your own data in your own environment. The repo is made to teach customers step-by-step on how to build a Smart Search Engine. Each Notebook builds on top of each other and ends in building a web application.
+The goal of the MVP workshop is to show/prove the value of a GPT Smart Search Engine built with the Azure Services, with your own data in your own environment. The repo is made to teach customers step-by-step on how to build a Smart Search Engine Chat Bot. Each Notebook builds on top of each other and ends in building a web application.
 
-For more information on the 3 day workshop, click the powerpoint presentation below:
+**For Microsoft FTEs:** This is a customer funded VBD, below the assets for the delivery.
 
-[Accelerator Pitch Deck](https://github.com/pablomarin/GPT-Azure-Search-Engine/blob/main/Pitch%20Deck%20Azure%20GPT%20Search%20Engine%20Accelerator.pdf)
+| **Item**                   | **Description**                                                                                                     | **Link**                                                                                                                                                |
+|----------------------------|---------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| VBD SKU Info and Datasheet                   | CSAM must dispatch it as "Customer Invested" against credits/hours of Unified Support Contract                                      | [ESXP SKU page](https://esxp.microsoft.com/#/omexplanding/services/13098/geo/USA/details/1)                                                                                              |
+| VBD Accreditation for CSAs     | Link for CSAs to get the Accreditation needed to deliver the workshop                                                                      | [Accreditation Link](https://learningplayer.microsoft.com/activity/s9239623/launch/)                                                                   |
+| VBD 3-day Workshop Asset (IP)  | The workshop code and MVP to be delivered  (this github repo)                                     | [Azure-Cognitive-Search-Azure-OpenAI-Accelerator](https://github.com/MSUSAzureAccelerators/Azure-Cognitive-Search-Azure-OpenAI-Accelerator)                |
+| VBD Workshop Deck          | The deck introducing and explaining the workshop                                                                    | [Azure OpenAI Accelerator - GPT Smart Search Pitch Deck.pdf](https://github.com/MSUSAzureAccelerators/Azure-Cognitive-Search-Azure-OpenAI-Accelerator/blob/main/Azure%20OpenAI%20Accelerator%20-%20GPT%20Smart%20Search%20Pitch%20Deck.pdf) |
 
-
+---
 **Prerequisites Client 3-Day Workshop**
 * Azure subscription
 * Accepted Application to Azure Open AI
@@ -21,13 +26,29 @@ For more information on the 3 day workshop, click the powerpoint presentation be
 * For IDE collaboration during workshop, Azure Machine Learning Workspace must be deployed in the RG
    * Note: Please ensure you have enough core compute quota in your Azure Machine Learning workspace 
 
-
+---
 # Architecture 
 ![Architecture](./images/GPT-Smart-Search-Architecture.jpg "Architecture")
 
+## Flow
+1. The user asks a question.
+2. In the app, an OpenAI LLM uses a clever prompt to determine which source contains the answer to the question.
+3. Four types of sources are available:
+   * 3a. Azure SQL Database - contains COVID-related statistics in the US.
+   * 3b. Azure Bing Search API - provides online web search for current information.
+   * 3c. Azure Cognitive Search - contains AI-enriched documents from Blob Storage (10k PDFs and 52k articles).
+      * 3c.1. Uses an LLM (OpenAI or Local Bert model) to vectorize the top K document chunks from 3c.
+      * 3c.2. Uses in-memory cosine similarity to get the top N chunks.
+      * 3c.3. Uses an OpenAI GPT model to craft the response from the Cog Search Engine (3c) by combining the question and the top N chunks.
+   * 3d. CSV Tabular File - contains COVID-related statistics in the US.
+4. The app retrieves the result from the source and crafts the answer.
+5. The tuple (Question and Answer) is saved to CosmosDB to keep a record of the interaction.
+6. The answer is delivered to the user.
+
+---
 ## Demo
 
-https://pablomarin-gpt-azure-search-engine-apphome-oq98mn.streamlit.app
+https://gptsmartsearch.azurewebsites.net/
 
 ---
 
@@ -45,7 +66,7 @@ https://pablomarin-gpt-azure-search-engine-apphome-oq98mn.streamlit.app
    - Tabular Data Q&A in CSV files and SQL Databases using GPT-4
    - Uses Bing Search API service for web search
    - ChatBot Interface
-   - (Coming soon) Recommends new searches based on users' history.
+   - Uses CosmosDB as persistent memory to save conversations for further analysis.
 
 ---
 
@@ -67,8 +88,27 @@ _Note: If you have never created a cognitive multi-service account before, pleas
 5. Enable Semantic Search on your Azure Cognitive Search Service:
    - On the left-nav pane, select Semantic Search (Preview).
    - Select either the Free plan or the Standard plan. You can switch between the free plan and the standard plan at any time.
-6. Make sure you run the notebooks on a **Python 3.10 conda enviroment**
-7. Install the dependencies on your machine (make sure you do the below comand on the same conda environment that you are going to run the notebooks:
+6. Clone repo to your AML Compute Instance.
+   - From GitHub: 
+      - On your Terminal, Paste the text below, substituting in your GitHub email address. [Generate a new SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key).
+        ```
+        ssh-keygen -t ed25519 -C "your_email@example.com"
+        ```
+     -  Copy the SSH public key to your clipboard. [Add a new SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key).
+        ```
+        cat ~/.ssh/id_ed25519.pub
+        # Then select and copy the contents of the id_ed25519.pub file
+        # displayed in the terminal to your clipboard
+        ```
+      - On GitHub, go to **Settings-> SSH and GPG Keys-> New SSH Key**
+      - In the "Title" field, add a descriptive label for the new key. "AML Compute". In the "Key" field, paste your public key.
+      - Finally, verify you are on your user directory **~/cloudfiles/code/Users/YOUR_USER $ ** and clone using SSH
+        ```
+        git clone git@github.com:YOUR-USERNAME/YOUR-REPOSITORY.git
+        ```
+
+7. Make sure you run the notebooks on a **Python 3.10 conda enviroment**
+8. Install the dependencies on your machine (make sure you do the below comand on the same conda environment that you are going to run the notebooks:
 ```
 pip install -r ./requirements.txt
 ```
@@ -86,11 +126,11 @@ pip install -r ./requirements.txt
 
 1. **Why the vector similarity is done in memory using FAISS versus having a separate vector database like RedisSearch or Pinecone?**
 
-A: True, doing the embeddings of the documents pages everytime that there is a query is not efficient. The ideal scenario is to vectorize the docs chunks once (first time they are needed) and then retrieve them from a database the next time they are needed. For this a special vector database is necessary. The ideal scenario though, is Azure Search to savea and retreive the vectors as part of the search results, along with the document chunks. Azure Search will soon allow this in a few months, let's wait for it. As of right now the embedding process doesn't take that much time or money, so it is worth the wait versus using another database just for vectors.
+A: True, doing the embeddings of the documents pages everytime that there is a query is not efficient. The ideal scenario is to vectorize the docs chunks once (first time they are needed) and then retrieve them from a database the next time they are needed. For this a special vector database is necessary. The ideal scenario though, is Azure Search to save and retreive the vectors as part of the search results, along with the document chunks. Azure Search will soon allow this in a few months, let's wait for it. As of right now the embedding process doesn't take that much time or money, so it is worth the wait versus using another database just for vectors. Once Azure Cog Search gets vector capabilities, the search/retrieval/answer process will be a lot faster.
 
 2. **Why use the MAP_REDUCE type in LangChaing sometimes versus STUFF type everytime?**
 
-A: Because using STUFF type with all the content of the pages as context, in many ocoasions, uses too many tokens. So the best way to deal with large documents is to find the answer by going trough all of the search results and doing many calls to the LLM looking for summarized answer, then combine this summaries and put them all in the call as context. For more information of the difference between STUFF and MAP_REDUCE, see [HERE](https://github.com/hwchase17/langchain/tree/master/langchain/chains/question_answering)
+A: Because using STUFF type with all the content of the pages as context, in many ocoasions, uses too many tokens. So the best way to deal with large documents is to find the answer by going trough all of the search results and doing many calls to the LLM looking for summarized answer, then combine this summaries and put them all in the call as context. However as time goes by, the tokens will not be a limitation anymore, GPT-4-32k models is a lot of tokens. Imagine GPT-5 or 6. For more information of the difference between STUFF and MAP_REDUCE, see [HERE](https://github.com/hwchase17/langchain/tree/master/langchain/chains/question_answering)
 
 3. **Why use Azure Cognitive Search engine to provide the context for the LLM and not fine tune the LLM instead?**
 

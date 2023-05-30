@@ -1,6 +1,6 @@
 streamlit
 streamlit-chat
-langchain==0.0.153
+langchain
 faiss-cpu
 openai
 tiktoken
@@ -12,3 +12,5 @@ sentence_transformers
 sqlalchemy<2.0.0
 pyodbc
 tabulate
+pandasql
+azure-cosmos
